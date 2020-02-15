@@ -1,0 +1,46 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+def hourglassSum(arr):
+    sumh=0
+    for i in range(len(arr)):
+        if i==1:
+                sumh+=arr[1][1]
+                continue
+        for j in range(len(arr)):
+            sumh+=arr[i][j] 
+    return sumh
+def sliser(l,s):
+    temp=[]
+    for i in range((len(l)-s)+1):
+        temp.append(l[i:i+s])
+    return temp
+
+def tr(temp,s):
+        tempr=[]
+        hsums=[]
+        for x in range(len(temp[1])):
+            
+            for y in range((len(temp)-s)+1):
+                i=y
+                while i <y+s:
+                    tempr.append(temp[i][x])
+                    i+=1
+                hsums.append(hourglassSum(tempr))   
+                tempr=[]
+        return max(hsums)
+
+if __name__ == '__main__':
+    arr = []
+    mx=0
+    for _ in range(6):
+        arr.append(list(map(int, input().rstrip().split())))
+    temp=[]
+    for i in arr:
+        temp.append(sliser(i,3))
+    print(tr(temp,3))
