@@ -1,0 +1,115 @@
+import numpy as np
+
+
+def init_pop_bin(npop,clen):
+    return np.random.randint(0,2,(npop,clen)) 
+    
+    
+def binary_cross_over(tps,pcross):
+    tow_childrens=np.zeros(tps.shape)
+    if np.random.rand()<=pcross:
+        cross_point=np.random.randint(1,tps.shape[1]-1)
+        tow_childrens[0][0:cross_point]=tps[0][0:cross_point]
+        tow_childrens[0][cross_point:]=tps[1][cross_point:]
+        tow_childrens[1][0:cross_point]=tps[1][0:cross_point]
+        tow_childrens[1][cross_point:]=tps[0][cross_point:]
+    return tow_childrens
+    
+def bin_mute(cromosom,pmute):
+    for i in range(len(cromosom)):
+        if np.random.rand() <=pmute:
+            if cromosom[i]==0:
+                cromosom[i]=1
+            else:
+                cromosom[i]=0
+    return cromosom
+    
+    
+    
+    
+    
+    def decodeInd(binaryInd,R_min,R_max,L):
+      binsum=0
+      for i in range(L):
+        binsum+=binaryInd[i]*(2**(L-i-1))
+      return R_min+(binsum/2**L)*(R_max-R_min)
+    
+    
+    
+    
+    
+    def evaluate_fitness(x,y):
+      return (x+2*y-7)**2+(2*x+y-5)**2
+    
+    def maxindex(l):
+      m=l[0]
+      c=0
+      for i in range(len(l)):
+        if l[i]>m:
+            m=l[i]
+            c=i
+      return c
+      
+ def minindex(l):
+    m=l[0]
+    c=0
+    for i in range(len(l)):
+        if l[i]<m:
+            m=l[i]
+            c=i
+    return c
+    
+    
+    
+ def tourment_selectian(pop,tour_size,fitness_values):
+    tow_parents=np.zeros((2,pop.shape[1]))
+    for i in range(len(tow_parents)):
+        slicer=np.random.randint(0,pop.shape[0]-tour_size)
+        tour=pop[slicer:slicer+tour_size]
+        fit=fitness_values[slicer:slicer+tour_size]
+        maxindex_in_pop=maxindex(fit)
+        tow_parents[i]=tour[maxindex_in_pop]
+    return tow_parents
+    
+    
+    
+    
+    def pop_fitness(pop,npop,clen):
+        fitness_values=np.zeros((npop,1))
+        for c in range(npop):
+          fitness_values[c]=evaluate_fitness(decodeInd(pop[c][:int(clen/2)],-10,10,int(clen/2)),decodeInd(pop[c][int(clen/2):],-10,10,int(clen/2)))
+                                           
+        return fitness_values
+    
+    
+    
+    
+    def runBinGA(npop,clen,ngen,pcross,pmute):
+      #intialize population 
+      pop=init_pop_bin(npop,clen)
+      highstfit=[]
+      fin_pop_fitness=np.zeros((ngen*2,1))
+      finpop=np.zeros((ngen*2,clen))
+      fitness_values=pop_fitness(pop,npop,clen)
+      ########################################
+     for i in range(ngen):
+        tow_parents = tourment_selectian(pop,5,fitness_values)
+        new_cheldrins=binary_cross_over(tow_parents,pcross)
+        for j in range(len(new_cheldrins)):
+            new_cheldrins[j]= bin_mute(new_cheldrins[j],pmute)
+        finpop[i]=new_cheldrins[0]
+        finpop[ngen*2-i-1]=new_cheldrins[1]
+                                           
+        
+        fin_pop_fitness=pop_fitness(finpop,ngen*2,clen)
+        highstfit.append(np.max(fin_pop_fitness))
+      #################################
+      index_of_minmum_fitness_infinPop=minindex(fin_pop_fitness)
+      z=fin_pop_fitness[index_of_minmum_fitness_infinPop]
+      x=decodeInd(finpop[index_of_minmum_fitness_infinPop][:int(clen/2)],-10,10,int(clen/2))
+      y=decodeInd(finpop[index_of_minmum_fitness_infinPop][int(clen/2):],-10,10,int(clen/2))
+      Solutions=(z,x,y)
+      return Solutions,highstfit                                           
+                                                      
+    
+    
