@@ -1,2 +1,2 @@
-# mohamed-ali2
-Genetic
+# Genetic
+using genetic algorithm to solve many problems 
